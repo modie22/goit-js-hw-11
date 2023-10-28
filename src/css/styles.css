@@ -1,0 +1,40 @@
+button{
+    border-radius: 3px;
+    background-color: #fff;
+    border: 1px solid #bdbdbd;
+    height: 43px; 
+    width: 100px;
+    font-size: 19px; 
+   background-color: #3e51e5;
+}
+input{
+  border: 1px solid #cccccc;
+   border-radius: 3px; 
+   height: 40px; 
+   width: 260px; 
+   font-size: 19px; 
+   color: #310404; 
+   font-family: Tahoma; 
+}
+.search-form{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.gallery{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-around;
+    align-items: center;
+}
+.photo-card{
+  box-shadow: 3px 3px 6px 4px #888;
+}
+.info{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  text-align: center;
+}
