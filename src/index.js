@@ -12,6 +12,13 @@ const searchParams = new URLSearchParams({
   safesearch: 'true',
 });
 
+async function fetchApi(value, page) {
+  const resp = await axios.get(
+    `${BASE_URL}?${searchParams}&q=${value}&per_page=40&page=${page}`
+  );
+  return resp.data;
+}
+
 const elements = {
   formEl: document.querySelector('.search-form'),
   galleryEl: document.querySelector('.gallery'),
@@ -22,10 +29,11 @@ elements.formEl.addEventListener('submit', createCard);
 function createCard(e) {
   e.preventDefault();
   elements.galleryEl.innerHTML = '';
-  paramSearch.name = e.currentTarget.searchQuery.value;
+  nameS = e.currentTarget.searchQuery.value;
+  console.log(nameS);
   elements.onloadBox.classList.add('js-guard');
   elements.target = document.querySelector('.js-guard');
-  paramSearch.page = 0;
+  page = 0;
   observer.observe(elements.target);
 }
 
@@ -33,11 +41,8 @@ const gallery = new SimpleLightbox('div.gallery a', {
   captionsData: 'alt',
 });
 
-const paramSearch = {
-  name: '',
-  page: 0,
-};
-
+let page = 0;
+let nameS = '';
 let options = {
   root: null,
   rootMargin: '600px',
@@ -46,25 +51,17 @@ let options = {
 const callback = (entries, observer) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      paramSearch.page = paramSearch.page + 1;
-      fetchCreate(paramSearch.name, paramSearch.page);
+      page = page + 1;
+      fetchCreate(nameS, page);
     }
   });
 };
 let observer = new IntersectionObserver(callback, options);
 
-async function fetchApi(value, page) {
-  const resp = await axios.get(
-    `${BASE_URL}?${searchParams}&q=${value}&per_page=40&page=${page}`
-  );
-  console.log(resp.data);
-  return resp.data;
-}
-
 function fetchCreate() {
-  fetchApi(paramSearch.name, paramSearch.page)
+  fetchApi(nameS, page)
     .then(({ hits, totalHits }) => {
-      if (totalHits / (paramSearch.page * 40) < 1) {
+      if (totalHits / (page * 40) < 1) {
         observer.unobserve(elements.target);
       }
       if (hits[0] === undefined) {
@@ -113,16 +110,26 @@ function fetchCreate() {
         .join('');
       elements.galleryEl.insertAdjacentHTML('beforeend', dataCards);
       galleryRef();
-      if (paramSearch.page === 1) console.log('123');
-      Notiflix.Notify.success(
-        `✅Запит пройшов успішно! Знайдено ${totalHits} картинок`
-      );
+      console.log(page);
+      if (page === 1) {
+        Notiflix.Notify.success(
+          `✅Запит пройшов успішно! Знайдено ${totalHits} картинок`
+        );
+      } else if (!(totalHits / (page * 40) < 1)) {
+        Notiflix.Notify.success(`✅Завантажено картинки`);
+      }
+      else{
+        Notiflix.Notify.success(
+          `Остання сторінка картинок`
+        );
+      }
     })
     .catch(error => {
       console.log(error);
       Notiflix.Report.failure(`Error: ${error.response.status}`, error.message);
     });
 }
+
 function galleryRef() {
   gallery.refresh();
 }
